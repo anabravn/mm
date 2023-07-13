@@ -33,8 +33,8 @@ void mm_p(double **a, double **b, double **c, int m, int n, int p, int f) {
     resto = m % f;
 
     /**
-     * Preenche um vetor com os argumentos para cada fluxo, definidos
-     * pela estrutura mm_args
+     * Preenche um vetor com os argumentos para cada fluxo da função 
+     * mm_aux(), definidos pela estrutura mm_args
      */
     for (int i = 0; i < f; i++) {
         /* Endereço das matrizes */
