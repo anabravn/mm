@@ -4,43 +4,91 @@
 
 #include "mm.h"
 
-int n;
-double **a, **b, **c;
+void mm_p(double **a, double **b, double **c, int m, int n, int p, int f) {
+    pthread_t *id = malloc(sizeof(pthread_t) * f);
+    mm_args *args = (mm_args *) malloc(sizeof(mm_args) * f);
+    int q, r;
 
-void *mm(void *args) {
-    int *arr = (int *) args;
-    int i = arr[0], x = i + arr[1];
+    q = m / f;
+    r = m % f;
 
-    while(i < x) {
-        for (int j = 0; j < n; j++) { 
-            c[i][j] = 0;
-            for (int k = 0; k < n; k++)
-                c[i][j] += a[i][k] * b[k][j];
-        }
-       i++; 
+    for (int i = 0; i < f; i++) {
+        args[i].a = a;
+        args[i].b = b;
+        args[i].c = c;
+
+        args[i].m = m;
+        args[i].n = n;
+        args[i].p = p;
+
+        args[i].i_start = i * q;
+        args[i].i_end = args[i].i_start + q;
+
     }
+
+    args[f - 1].i_end += r; // resto
+
+    for (int i = 0; i < f; i++) {
+        pthread_create(&(id[i]), NULL, mm_aux, (void *) &(args[i]));
+    }
+
+    for (int i = 0; i < f; i++) {
+        pthread_join(id[i], NULL);
+    }
+
+    free(args);
+    free(id);
 }
 
-double **createm(int n) {
-    double **matrix = (double **) malloc(sizeof(double *) * n);
+void *mm_aux(void *args) {
+    mm_args *arg = (mm_args *) args;
+    double **a, **b, **c;
 
-    for (int i = 0; i < n; i++) {
+    a = arg->a;
+    b = arg->b;
+    c = arg->c;
+
+
+    for (int i = arg->i_start; i < arg->i_end; i++) {
+        for (int j = 0; j < arg->p; j++) { 
+            c[i][j] = 0;
+
+            for (int k = 0; k < arg->n; k++)
+                c[i][j] += a[i][k] * b[k][j];
+        }
+    }
+
+    return NULL;
+}
+
+double **create_m(int m, int n) {
+    double **matrix = (double **) malloc(sizeof(double *) * m);
+
+    for (int i = 0; i < m; i++) {
         matrix[i] = (double *) malloc(sizeof(double) * n);
     }
 
     return matrix;
 }
 
-void initm(int n, double  **matrix) {
-    for (int i = 0; i < n; i++) {
+void free_m(int m, double **matrix) {
+    for (int i = 0; i < m; i++) {
+        free(matrix[i]);
+    }
+
+    free(matrix);
+}
+
+void init_m(int m, int n, double  **matrix) {
+    for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
             matrix[i][j] = rand() % 10;
         }
     }
 }
 
-void printm(int n, double **matrix) {
-    for (int i = 0; i < n; i++) {
+void print_m(int m, int n, double **matrix) {
+    for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
             printf("%0.2f ", matrix[i][j]);
         }

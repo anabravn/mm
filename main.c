@@ -4,64 +4,42 @@
 
 #include "mm.h"
 
-extern int n;
-extern double **a, **b, **c;
-
 int main(int argc, char *argv[]) {
-    pthread_t *id;
-    int **args;
-    int f, q, r;
-    
-    n = atoi(argv[1]); // tamanho da matriz
-    f = atoi(argv[2]); // Número de fluxos de execução
+    double **a, **b, **c;
+    int f, m, n, p;
 
-    // vetor de ids de threads
-    id = (pthread_t *) malloc(sizeof(pthread_t) * f);
+    /* 
+    tamanho das matrizes 
+    A (m x n) * B (n x p) = C (m x p) 
+    */
+    m = atoi(argv[1]);
+    n = atoi(argv[2]); 
+    p = atoi(argv[3]);
 
-    // argumentos p/ cada thread
-    args = (int **) malloc(sizeof(int *) * f);
+    f = atoi(argv[4]); // Número de fluxos de execução
 
     // aloca matrizes
-    a = createm(n);
-    b = createm(n);
-    c = createm(n);
+    a = create_m(m, n);
+    b = create_m(n, p);
+    c = create_m(m, p);
 
      // inicializa matrizes
-    initm(n, a);
-    initm(n, b);
+    init_m(m, n, a);
+    init_m(n, p, b);
 
-    printm(n, a); 
-    printm(n, b);
-
-    // número de linhas de cada fluxo
-    q = n / f; 
-    r = n % f;
- 
-    for (int i = 0; i < f; i++) {
-        args[i] = (int *) malloc(sizeof(int) * 2);
-
-        args[i][0] = i * q; // primeira linha
-        args[i][1] = q; // número de linhas
+    if ((m <= 10) && (n <= 10) && (p <= 10)) {
+        print_m(m, n, a);
+        print_m(n, p, b);
     }
 
-    args[0][1] += r;
+    mm_p(a, b, c, m, n, p, f);
 
-    for(int i = 0; i < f; i++) {
-        pthread_create(&id[i], NULL, mm, (void *) args[i]);
-    }
+    if ((m <= 10) && (p <= 10))
+        print_m(m, p, c);
 
-
-    for (int i = 0; i < f; i++) {
-        pthread_join(id[i], NULL);
-        free(args[i]);
-    }
-
-    printm(n, c);
-
-    free(a);
-    free(b);
-    free(c);
-    free(id);
+    free_m(m, a);
+    free_m(n, b);
+    free_m(m, c);
 
     return 0;
 }
