@@ -8,10 +8,6 @@ int main(int argc, char *argv[]) {
     double **a, **b, **c;
     int f, m, n, p;
 
-    /* 
-    tamanho das matrizes 
-    A (m x n) * B (n x p) = C (m x p) 
-    */
     m = atoi(argv[1]);
     n = atoi(argv[2]); 
     p = atoi(argv[3]);

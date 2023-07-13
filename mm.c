@@ -9,7 +9,10 @@
  *
  * Realiza a multiplicação de matrizes em paralelo, dividindo a matriz
  * em blocos com aproximadamente a mesma quantidade de linhas para cada fluxo.
- * 
+ *
+ * As matrizes tem o formato
+ * A (m x n) * B (n x p) = C (m x p) 
+
  * @param a Matriz A de ordem m x n
  * @param b Matriz B de ordem n x p
  * @param c Matriz C resultante, de ordem m x p
@@ -65,6 +68,15 @@ void mm_p(double **a, double **b, double **c, int m, int n, int p, int f) {
     free(id);
 }
 
+/**
+ * @brief Função auxiliar para multiplicação de matrizes em paralelo
+ *
+ * Calcula parte das linhas do resultado da multiplicaçãp
+ * de duas matrizes. Utilizada em mm_p para dividir a multiplicação entre os 
+ * fluxos, atribuindo uma quantidade de linhas a cada fluxo.
+ *
+ * @param args Um ponteiro para uma estrutura do tipo mm_args
+ */
 void *mm_aux(void *args) {
     mm_args *arg = (mm_args *) args;
     double **a, **b, **c;
@@ -72,7 +84,6 @@ void *mm_aux(void *args) {
     a = arg->a;
     b = arg->b;
     c = arg->c;
-
 
     for (int i = arg->i_start; i < arg->i_end; i++) {
         for (int j = 0; j < arg->p; j++) { 
