@@ -97,6 +97,15 @@ void *mm_aux(void *args) {
     return NULL;
 }
 
+/**
+ * @brief Cria uma nova matriz
+ *
+ * Aloca memória para uma matriz de doubles, e retorna um 
+ * ponteiro para a nova matriz.
+ *
+ * @param m Número de linhas
+ * @param n Número de colunas
+ */
 double **create_m(int m, int n) {
     double **matrix = (double **) malloc(sizeof(double *) * m);
 
@@ -107,6 +116,13 @@ double **create_m(int m, int n) {
     return matrix;
 }
 
+/**
+ * @brief Deleta uma matriz
+ *
+ * @param m Número de linhas 
+ * @param n Número de colunas
+ * @param matrix Ponteiro para a matriz
+ */
 void free_m(int m, double **matrix) {
     for (int i = 0; i < m; i++) {
         free(matrix[i]);
@@ -115,6 +131,16 @@ void free_m(int m, double **matrix) {
     free(matrix);
 }
 
+/**
+ * @brief Inicializa uma matriz aleatória
+ *
+ * Inicializa uma matriz já alocada com números
+ * aleatórios entre 0 e 9.
+ *
+ * @param m Número de linhas
+ * @param n Número de colunas
+ * @param matrix Ponteiro para a matriz
+ */
 void init_m(int m, int n, double  **matrix) {
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
@@ -123,6 +149,13 @@ void init_m(int m, int n, double  **matrix) {
     }
 }
 
+/**
+ * @brief Escreve uma matriz na saída padrão
+ *
+ * @param m Número de linhas
+ * @param n Número de colunas
+ * @param matrix Ponteiro para a matriz
+ */
 void print_m(int m, int n, double **matrix) {
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
