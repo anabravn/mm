@@ -3,14 +3,6 @@
 
 #include "mm.h"
 
-void assert_equal_m(double **a, double **b, int m, int n) {
-    for(int i = 0; i < m; i++) {
-        for(int j = 0; j < n; j++) {
-            ck_assert_double_eq_tol(a[i][j], b[i][j], 10E-6);
-        }
-    }
-}
-
 START_TEST (check_mm_odd)
 {
     double **a, **b, **c, **result;
@@ -54,7 +46,7 @@ START_TEST (check_mm_odd)
 
     mm_p(a, b, c, n, n, n, 3);
 
-    assert_equal_m(c, result, n, n); 
+    ck_assert(equal_m(c, result, n, n));
 
     free_m(n, a);
     free_m(n, b);
@@ -90,7 +82,7 @@ START_TEST (check_mm_even)
 
     mm_p(a, b, c, n, n, n, 2);
 
-    assert_equal_m(c, result, n, n); 
+    ck_assert(equal_m(c, result, n, n));
 
     free_m(n, a);
     free_m(n, b);
@@ -140,7 +132,7 @@ START_TEST (check_mm_rect)
 
     mm_p(a, b, c, m, n, p, 2);
 
-    assert_equal_m(c, result, m, p); 
+    ck_assert(equal_m(c, result, m, p));
 
     free_m(m, a);
     free_m(n, b);
