@@ -5,6 +5,35 @@
 #include "mm.h"
 
 /**
+ * @brief Função auxiliar para multiplicação de matrizes em paralelo
+ *
+ * Calcula parte das linhas do resultado da multiplicaçãp
+ * de duas matrizes. Utilizada em mm_p para dividir a multiplicação entre os 
+ * fluxos, atribuindo uma quantidade de linhas a cada fluxo.
+ *
+ * @param args Um ponteiro para uma estrutura do tipo mm_args
+ */
+void *mm_aux(void *args) {
+    mm_args *arg = (mm_args *) args;
+    double **a, **b, **c;
+
+    a = arg->a;
+    b = arg->b;
+    c = arg->c;
+
+    for (int i = arg->i_start; i < arg->i_end; i++) {
+        for (int j = 0; j < arg->p; j++) { 
+            c[i][j] = 0;
+
+            for (int k = 0; k < arg->n; k++)
+                c[i][j] += a[i][k] * b[k][j];
+        }
+    }
+
+    return NULL;
+}
+
+/**
  * @brief Multiplicação de matrizes em paralelo
  *
  * Realiza a multiplicação de matrizes em paralelo, dividindo a matriz
@@ -69,33 +98,31 @@ void mm_p(double **a, double **b, double **c, int m, int n, int p, int f) {
 }
 
 /**
- * @brief Função auxiliar para multiplicação de matrizes em paralelo
+ * @brief Multiplicação de matrizes sequencial
  *
- * Calcula parte das linhas do resultado da multiplicaçãp
- * de duas matrizes. Utilizada em mm_p para dividir a multiplicação entre os 
- * fluxos, atribuindo uma quantidade de linhas a cada fluxo.
+ * Realiza a multiplicação de matrizes sequencialmente, de maneira padrão.
+ * As matrizes tem o formato
+ * A (m x n) * B (n x p) = C (m x p) 
+
+ * @param a Matriz A de ordem m x n
+ * @param b Matriz B de ordem n x p
+ * @param c Matriz C resultante, de ordem m x p
  *
- * @param args Um ponteiro para uma estrutura do tipo mm_args
- */
-void *mm_aux(void *args) {
-    mm_args *arg = (mm_args *) args;
-    double **a, **b, **c;
-
-    a = arg->a;
-    b = arg->b;
-    c = arg->c;
-
-    for (int i = arg->i_start; i < arg->i_end; i++) {
-        for (int j = 0; j < arg->p; j++) { 
+ * @param m Número de linhas da matriz A e número de linhas da matriz resultante
+ * @param n Número de linhas da matriz B e número de colunas da matriz resultante
+ * @param p Número de colunas da matriz B e número  
+*/
+void mm_s(double **a, double **b, double **c, int m, int n, int p) {
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < p; j++) { 
             c[i][j] = 0;
 
-            for (int k = 0; k < arg->n; k++)
+            for (int k = 0; k < n; k++)
                 c[i][j] += a[i][k] * b[k][j];
         }
     }
-
-    return NULL;
 }
+
 
 /**
  * @brief Cria uma nova matriz
@@ -163,5 +190,32 @@ void print_m(int m, int n, double **matrix) {
         }
         putchar('\n');
     }
+
     putchar('\n');
 }
+
+/**
+ * @brief Comparação de matrizes
+ *
+ * @param a Matriz A de ordem m x n
+ * @param b Matriz B de ordem m x n
+ *
+ * @param m Número de linhas das matrizes A e B
+ * @param n Número de colunas das matrizes A e B
+ *
+ * @return 1 se as matrizes são iguais, 0 caso contrário
+ *
+ * @todo Suporte para números de ponto flutuante
+ */
+int equal_m(double **a, double **b, int m, int n) {
+    for(int i = 0; i < m; i++) {
+        for(int j = 0; j < n; j++) {
+            if (a[i][j] != b[i][j])
+                return 0;
+        }
+    }
+
+    return 1;
+}
+
+

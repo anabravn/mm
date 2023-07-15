@@ -17,12 +17,13 @@ typedef struct mm_args {
 } mm_args;
 
 void mm_p(double **a, double **b, double **c, int m, int n, int p, int f);
-void *mm_aux(void *args);
+void mm_s(double **a, double **b, double **c, int m, int n, int p);
 
 double **create_m(int m, int n);
 void free_m(int m, double **matrix);
 
 void init_m(int m, int n, double **matrix);
+int equal_m(double **a, double **b, int m, int n);
 
 void print_m(int m, int n, double **matrix);
 
