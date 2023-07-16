@@ -12,13 +12,16 @@
  *
  * @return Tempo real (monotônico) em segundos
  */
-static inline double timer(void) {
+double timer(void) {
     struct timespec tp;
-    clockid_t id = CLOCK_MONOTONIC;
+    double nsec, sec;
 
-    clock_gettime(id, &tp);
+    clock_gettime(CLOCK_MONOTONIC, &tp);
 
-    return (float) tp.tv_sec + ((float) tp.tv_nsec) * 10E-9;
+    nsec = ((double) tp.tv_nsec) * 10E-9;
+    sec = (double) tp.tv_sec;
+
+    return sec + nsec;
 }
 
 int main(int argc, char *argv[]) {
@@ -71,7 +74,7 @@ int main(int argc, char *argv[]) {
     } else {
         // saída: número de linhas, número de fluxos,
         // tempo paralelo, tempo sequencial
-        printf("%d,%d,%f,%f\n", m, f, t1, t2);
+        printf("%d,%d,%.10f,%.10f\n", m, f, t1, t2);
     }
 
     free_m(m, a);
