@@ -16,7 +16,11 @@ do
         for (( k=0; k<10; k++ ));
         do
             printf "size=%d threads=%d k=%d\n" $i $j $k
-            ./main $i $i $i $j >> $file
+
+            result=$(./main $i $i $i $j)
+            echo $result
+
+            echo $result > $file
         done
     done
 done
