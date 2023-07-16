@@ -6,28 +6,16 @@
 
 #include "mm.h"
 
-/**
- * Utilizada para calcular o tempo decorrido entre a execução
- * das funções
- *
- * @return Tempo real (monotônico) em segundos
- */
-double timer(void) {
-    struct timespec tp;
-    double nsec, sec;
-
-    clock_gettime(CLOCK_MONOTONIC, &tp);
-
-    nsec = ((double) tp.tv_nsec) * 10E-9;
-    sec = (double) tp.tv_sec;
-
-    return sec + nsec;
+double diff_timespec(const struct timespec *time1, const struct timespec *time0) {
+  return (time1->tv_sec - time0->tv_sec)
+      + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
 }
 
 int main(int argc, char *argv[]) {
     double **a, **b, **c_p, **c_s;
     int f, m, n, p;
-    double t1, t2;
+    struct timespec t1, t2;
+    double tp, ts;
 
     if (argc < 5) {
         fprintf(stderr, "Argumentos inválidos.\n");
@@ -51,13 +39,15 @@ int main(int argc, char *argv[]) {
     init_m(m, n, a);
     init_m(n, p, b);
 
-    t1 = timer();
+    clock_gettime(CLOCK_MONOTONIC, &t1);
     mm_p(a, b, c_p, m, n, p, f); // Multiplicação em paralelo
-    t1 = timer() - t1; 
+    clock_gettime(CLOCK_MONOTONIC, &t2);
+    tp = diff_timespec(&t2, &t1);
 
-    t2 = timer();
+    clock_gettime(CLOCK_MONOTONIC, &t1);
     mm_s(a, b, c_s, m, n, p); // Multiplicação sequencial
-    t2 = timer() - t2;
+    clock_gettime(CLOCK_MONOTONIC, &t2);
+    ts = diff_timespec(&t2, &t1);
 
     // verifica se o resultado é o mesmo
     assert(equal_m(c_p, c_s, m, p));
@@ -74,7 +64,7 @@ int main(int argc, char *argv[]) {
     } else {
         // saída: número de linhas, número de fluxos,
         // tempo paralelo, tempo sequencial
-        printf("%d,%d,%.10f,%.10f\n", m, f, t1, t2);
+        printf("%d,%d,%.10f,%.10f\n", m, f, tp, ts);
     }
 
     free_m(m, a);
