@@ -20,7 +20,7 @@ do
             result=$(./main $i $i $i $j)
             echo $result
 
-            echo $result > $file
+            echo $result >> $file
         done
     done
 done
