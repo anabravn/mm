@@ -13,7 +13,7 @@ do
     for j in "${threads[@]}"
     do
         # executa 10 vezes
-        for (( k=0; k<10; k++ ));
+        for (( k=0; k<5; k++ ));
         do
             printf "size=%d threads=%d k=%d\n" $i $j $k
 
